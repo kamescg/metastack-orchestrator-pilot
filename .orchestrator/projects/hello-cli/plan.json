@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "projectId": "hello-cli",
+  "objective": "Ship a tiny greeter CLI with a shout mode, usage errors, and tests",
+  "requirements": [
+    { "id": "FR-001", "kind": "functional", "text": "Greet a named user from the command line", "acceptance": [{ "id": "FR-001-AC1", "text": "node bin/hello.js Ada prints Hello, Ada! and exits 0" }], "priority": "P1", "classification": "development", "verification": "automated" },
+    { "id": "FR-002", "kind": "functional", "text": "Shout mode upper-cases the greeting", "acceptance": [{ "id": "FR-002-AC1", "text": "node bin/hello.js --shout Ada prints HELLO, ADA! and exits 0" }], "priority": "P2", "classification": "development", "verification": "automated" },
+    { "id": "FR-003", "kind": "functional", "text": "Invalid usage is reported", "acceptance": [{ "id": "FR-003-AC1", "text": "running with no name exits 2 and prints a usage line to stderr" }], "priority": "P1", "classification": "development", "verification": "automated" },
+    { "id": "NFR-001", "kind": "nonfunctional", "text": "Automated tests cover every requirement", "acceptance": [{ "id": "NFR-001-AC1", "text": "npm test passes with at least one test per functional requirement" }], "priority": "P1", "classification": "development", "verification": "automated" },
+    { "id": "SC-001", "kind": "nonfunctional", "text": "Developers adopt the greeter for demos", "acceptance": [{ "id": "SC-001-AC1", "text": "At least 3 demos use it within 30 days of launch" }], "priority": "P3", "classification": "post_launch", "verification": "manual_optional" }
+  ],
+  "decisions": [
+    { "id": "D-001", "title": "Entry point", "decision": "bin/hello.js parses argv and owns exit codes; src/greet.js stays pure" },
+    { "id": "D-002", "title": "Shout formatting", "decision": "src/format.js exports shout(text); the CLI composes shout(greet(name))" },
+    { "id": "D-003", "title": "Tests", "decision": "node --test under tests/; the approved check is npm test" }
+  ],
+  "milestones": [
+    { "id": "M1", "title": "Independent tracks: CLI entry point and shout formatting" },
+    { "id": "M2", "title": "Integration: shout mode wired through the CLI" }
+  ],
+  "tasks": [
+    { "id": "T1", "track": "cli", "milestone": "M1", "purpose": "Add bin/hello.js that greets a named user and reports usage errors", "requirementRefs": ["FR-001", "FR-003", "NFR-001"], "decisionRefs": ["D-001"], "dependsOn": [], "writeGlobs": ["bin/**", "tests/cli.test.js"], "checkIds": ["test"], "interfaceChanges": ["bin/hello.js argv contract"] },
+    { "id": "T2", "track": "format", "milestone": "M1", "purpose": "Add src/format.js with shout(text) and its tests", "requirementRefs": ["FR-002", "NFR-001"], "decisionRefs": ["D-002"], "dependsOn": [], "writeGlobs": ["src/format.js", "tests/format.test.js"], "checkIds": ["test"], "sharedResources": ["format-contract"], "interfaceChanges": ["shout(text: string): string"] },
+    { "id": "T3", "track": "cli", "milestone": "M2", "purpose": "Wire --shout through bin/hello.js using shout()", "requirementRefs": ["FR-002", "NFR-001"], "decisionRefs": ["D-001", "D-002"], "dependsOn": ["T1", "T2"], "writeGlobs": ["bin/**", "tests/cli.test.js"], "checkIds": ["test"], "sharedResources": ["format-contract"] }
+  ],
+  "assumptions": ["Node.js 24 is available on the host", "No external dependencies are needed"]
+}

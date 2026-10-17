@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "projectId": "hello-cli",
+  "providers": {
+    "codex": { "kind": "codex" },
+    "claude": { "kind": "claude" }
+  },
+  "roles": {
+    "builder": "codex",
+    "reviewer": "claude",
+    "auditor": "claude",
+    "planner": "codex",
+    "plan_reviewer": "claude",
+    "replanner": "codex"
+  },
+  "checks": {
+    "test": {
+      "executable": "npm",
+      "args": ["test"],
+      "requiresBrowser": false,
+      "requiresNetwork": false,
+      "parser": "node-spec",
+      "requireCounts": true,
+      "timeoutSec": 300
+    }
+  },
+  "github": { "backend": "gh", "repository": "OWNER/hello-cli", "remote": "origin" },
+  "policy": {
+    "targetBranch": "main",
+    "mergeMethod": "merge",
+    "requiredChecks": ["test"],
+    "integrationChecks": ["test"],
+    "browserAuthorized": false,
+    "allowedDependencyChanges": true,
+    "reservedActions": ["production-deploy", "live-data-mutation", "destructive-outside-workspace", "force-push", "history-rewrite", "branch-protection-change", "budget-increase", "acceptance-criteria-change"],
+    "budgets": {
+      "planningInvocations": 6,
+      "planningMinutes": 30,
+      "invocations": 50,
+      "activeHours": 8,
+      "attemptMinutes": 30,
+      "checkMinutes": 15,
+      "repairCycles": 2,
+      "replans": 1,
+      "milestoneRemediation": 2,
+      "finalRemediation": 2,
+      "remoteRetries": 3,
+      "monetaryCapUsd": null
+    },
+    "capacity": { "agents": 3, "builders": 2 },
+    "waivers": [],
+    "elevatedPaths": [".github/**", "**/auth/**", "**/*auth*", "**/security/**", "**/migrations/**", "**/*.sql", "AGENTS.md", "CLAUDE.md", ".claude/**", ".codex/**", "**/*secret*", "**/*.pem"],
+    "prohibitedPaths": [".orchestrator/local/**", ".orchestrator/config.json", ".git/**", ".git"],
+    "manualVerifications": {}
+  }
+}
