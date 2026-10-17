@@ -6,16 +6,17 @@
       "kind": "codex"
     },
     "claude": {
-      "kind": "claude"
+      "kind": "claude",
+      "maxTurns": 60
     }
   },
   "roles": {
-    "builder": "codex",
-    "reviewer": "claude",
-    "auditor": "claude",
-    "planner": "codex",
-    "plan_reviewer": "claude",
-    "replanner": "codex"
+    "builder": "claude",
+    "reviewer": "codex",
+    "auditor": "codex",
+    "planner": "claude",
+    "plan_reviewer": "codex",
+    "replanner": "claude"
   },
   "checks": {
     "test": {
@@ -101,6 +102,7 @@
     "author": {
       "name": "Metastack Orchestrator",
       "email": "3408362+kamescg@users.noreply.github.com"
-    }
+    },
+    "remotePollIntervalMs": 20000
   }
 }
