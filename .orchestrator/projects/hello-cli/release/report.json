@@ -1,0 +1,280 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-10-17T00:35:18.722Z",
+  "phase": "release-docs",
+  "run": {
+    "id": "run_mvbnjj9a24a14f7987",
+    "projectId": "hello-cli",
+    "status": "RUNNING",
+    "statusReason": "resumed",
+    "baseline": "7c753f6df0b9aeb0f6cfbff9479332a8a0bb5e7e",
+    "target": "main",
+    "planRevision": "0bf832af53254866836a26e3f30d6d8feb7fe8d3006a8f7b4706ecbbf7e57e72",
+    "auditedCommit": "9c277d7ea3ccaa0c8d5f3bde6a724842e69a6a35"
+  },
+  "objective": "Ship a tiny greeter CLI with a shout mode, usage errors, and tests",
+  "scope": {
+    "approvedRequirements": 4,
+    "deliveredRequirements": 4,
+    "postLaunch": [
+      "SC-001: Developers adopt the greeter for demos"
+    ],
+    "amendments": [
+      {
+        "id": "AM_mvbnobet9aa01d77c0",
+        "classification": "operational",
+        "disposition": "applied",
+        "reason": "@/private/tmp/claude-501/pilot/amend-t2.json"
+      }
+    ]
+  },
+  "requirements": [
+    {
+      "id": "FR-001",
+      "text": "Greet a named user from the command line",
+      "classification": "development",
+      "verification": "automated",
+      "criteria": [
+        {
+          "id": "FR-001-AC1",
+          "text": "node bin/hello.js Ada prints Hello, Ada! and exits 0",
+          "audit": "met",
+          "evidence": "Static inference. bin/hello.js:4-5 sets shoutMode=false for argv[2]='Ada' and name='Ada'; bin/hello.js:11 calls console.log(greet('Ada')); src/greet.js:2 returns `Hello, ${name}!`; process.exitCode is never set on this path so exit is 0. Covered by tests/cli.test.js:8-15 which spawns the entry point with 'Ada' and asserts status 0, stdout 'Hello, Ada!\\n', stderr ''."
+        }
+      ],
+      "tasks": [
+        {
+          "id": "T1",
+          "state": "DONE",
+          "pr": "https://github.com/kamescg/metastack-orchestrator-pilot/pull/2",
+          "mergeSha": "13628ba865485d0682bc899ad4a3205e09802774",
+          "completion": "merged"
+        }
+      ]
+    },
+    {
+      "id": "FR-002",
+      "text": "Shout mode upper-cases the greeting",
+      "classification": "development",
+      "verification": "automated",
+      "criteria": [
+        {
+          "id": "FR-002-AC1",
+          "text": "node bin/hello.js --shout Ada prints HELLO, ADA! and exits 0",
+          "audit": "met",
+          "evidence": "Static inference. bin/hello.js:4 sets shoutMode=true when argv[2]==='--shout', bin/hello.js:5 takes name from argv[3], bin/hello.js:11 prints shout(greet(name)); src/format.js:2 returns text.toUpperCase(), yielding 'HELLO, ADA!'. Matches D-002 composition. Covered by tests/cli.test.js:26-33 (status 0, stdout 'HELLO, ADA!\\n') and tests/format.test.js:6-8."
+        }
+      ],
+      "tasks": [
+        {
+          "id": "T3",
+          "state": "DONE",
+          "pr": "https://github.com/kamescg/metastack-orchestrator-pilot/pull/3",
+          "mergeSha": "9c277d7ea3ccaa0c8d5f3bde6a724842e69a6a35",
+          "completion": "merged"
+        }
+      ]
+    },
+    {
+      "id": "FR-003",
+      "text": "Invalid usage is reported",
+      "classification": "development",
+      "verification": "automated",
+      "criteria": [
+        {
+          "id": "FR-003-AC1",
+          "text": "running with no name exits 2 and prints a usage line to stderr",
+          "audit": "met",
+          "evidence": "Static inference. With no args, bin/hello.js:5 yields name=undefined; bin/hello.js:7-9 writes 'Usage: node bin/hello.js <name>' via console.error (stderr) and sets process.exitCode=2; nothing is written to stdout. Covered by tests/cli.test.js:17-24 (status 2, stdout '', stderr usage line) and the additional case '--shout' with no name at tests/cli.test.js:35-42."
+        }
+      ],
+      "tasks": [
+        {
+          "id": "T1",
+          "state": "DONE",
+          "pr": "https://github.com/kamescg/metastack-orchestrator-pilot/pull/2",
+          "mergeSha": "13628ba865485d0682bc899ad4a3205e09802774",
+          "completion": "merged"
+        }
+      ]
+    },
+    {
+      "id": "NFR-001",
+      "text": "Automated tests cover every requirement",
+      "classification": "development",
+      "verification": "automated",
+      "criteria": [
+        {
+          "id": "NFR-001-AC1",
+          "text": "npm test passes with at least one test per functional requirement",
+          "audit": "met",
+          "evidence": "Static inference, not an observed run. package.json:7 defines test as 'node --test --test-reporter=spec'; Node's default discovery matches **/*.test.js so tests/cli.test.js, tests/format.test.js, tests/greet.test.js are collected (D-003). Per-requirement coverage: FR-001 at tests/cli.test.js:8 and tests/greet.test.js:5; FR-002 at tests/cli.test.js:26 and tests/format.test.js:6; FR-003 at tests/cli.test.js:17 and :35. Every assertion was traced against the source and matches expected output exactly, including trailing newlines from console.log/console.error. No dependencies are required (package.json has none), so install state cannot cause failure."
+        }
+      ],
+      "tasks": [
+        {
+          "id": "T1",
+          "state": "DONE",
+          "pr": "https://github.com/kamescg/metastack-orchestrator-pilot/pull/2",
+          "mergeSha": "13628ba865485d0682bc899ad4a3205e09802774",
+          "completion": "merged"
+        },
+        {
+          "id": "T2",
+          "state": "DONE",
+          "pr": "https://github.com/kamescg/metastack-orchestrator-pilot/pull/1",
+          "mergeSha": "f4e67d7c0e35b7d5dd15f573e95dabdc1aece957",
+          "completion": "merged"
+        },
+        {
+          "id": "T3",
+          "state": "DONE",
+          "pr": "https://github.com/kamescg/metastack-orchestrator-pilot/pull/3",
+          "mergeSha": "9c277d7ea3ccaa0c8d5f3bde6a724842e69a6a35",
+          "completion": "merged"
+        }
+      ]
+    },
+    {
+      "id": "SC-001",
+      "text": "Developers adopt the greeter for demos",
+      "classification": "post_launch",
+      "verification": "manual_optional",
+      "criteria": [
+        {
+          "id": "SC-001-AC1",
+          "text": "At least 3 demos use it within 30 days of launch",
+          "audit": "manual check not recorded",
+          "evidence": ""
+        }
+      ],
+      "tasks": []
+    }
+  ],
+  "merges": [
+    {
+      "task": "T1",
+      "pr": "https://github.com/kamescg/metastack-orchestrator-pilot/pull/2",
+      "mergeSha": "13628ba865485d0682bc899ad4a3205e09802774",
+      "risk": "standard"
+    },
+    {
+      "task": "T2",
+      "pr": "https://github.com/kamescg/metastack-orchestrator-pilot/pull/1",
+      "mergeSha": "f4e67d7c0e35b7d5dd15f573e95dabdc1aece957",
+      "risk": "elevated"
+    },
+    {
+      "task": "T3",
+      "pr": "https://github.com/kamescg/metastack-orchestrator-pilot/pull/3",
+      "mergeSha": "9c277d7ea3ccaa0c8d5f3bde6a724842e69a6a35",
+      "risk": "standard"
+    }
+  ],
+  "checks": [
+    {
+      "checkId": "test",
+      "commit": "8f977a1e2727",
+      "status": "pass",
+      "counts": "4/0/0",
+      "provenance": "runner"
+    },
+    {
+      "checkId": "test",
+      "commit": "c2b987d1f309",
+      "status": "pass",
+      "counts": "3/0/0",
+      "provenance": "runner"
+    },
+    {
+      "checkId": "test",
+      "commit": "4bf2a7763761",
+      "status": "pass",
+      "counts": "6/0/0",
+      "provenance": "runner"
+    },
+    {
+      "checkId": "test",
+      "commit": "dd35d090148e",
+      "status": "pass",
+      "counts": "8/0/0",
+      "provenance": "runner"
+    }
+  ],
+  "waivers": [],
+  "decisions": [
+    {
+      "id": "D-001",
+      "title": "Entry point",
+      "decision": "bin/hello.js parses argv and owns exit codes; src/greet.js stays pure"
+    },
+    {
+      "id": "D-002",
+      "title": "Shout formatting",
+      "decision": "src/format.js exports shout(text); the CLI composes shout(greet(name))"
+    },
+    {
+      "id": "D-003",
+      "title": "Tests",
+      "decision": "node --test under tests/; the approved check is npm test"
+    }
+  ],
+  "usage": {
+    "invocationsUsed": 16,
+    "invocationLimit": 30,
+    "activeHours": 0.19,
+    "activeHourLimit": 8,
+    "inputTokens": 1131270,
+    "outputTokens": 75651,
+    "costUsd": 6.8056427500000005,
+    "attemptsWithUnknownUsage": 0
+  },
+  "reviews": {
+    "merged": 3,
+    "repairCycles": {
+      "RELEASE": 0,
+      "T1": 0,
+      "T2": 0,
+      "T3": 0
+    }
+  },
+  "exceptions": [
+    {
+      "cause": "review_blocked:T2",
+      "summary": "review could not establish required evidence: Direct execution of `npm test` at head 8f977a1 (relied on runner evidence EV_mvbnkd0idfc6d5701e).; Direct execution of `node bin/hello.js --shout Ada` (impossible at this head: file absent).",
+      "affected": [
+        "T2"
+      ],
+      "recommendation": "Provide the missing evidence or amend the verification plan.",
+      "status": "resolved"
+    }
+  ],
+  "limitations": [
+    "RELEASE_READY means the approved development scope is complete and the release package is prepared; production was not deployed and no real traffic was observed.",
+    "No browser or manual UI review was performed by the runner unless explicitly authorized in policy.",
+    "Runner check evidence is local to the orchestrator host; GitHub required checks were authoritative for merges.",
+    "No commands were permitted, so no test, CLI, or git command was executed; all verdicts are from reading the source at the frozen snapshot.",
+    "Tool set in this attempt had no file-writing capability, so result.json was not written to resultPath and no scratch artifacts were produced.",
+    "Git history shows two consecutive commits with the identical T3 message (dd35d09 and 9c277d7); this is a process observation from the supplied status snapshot, not inspected further and not a product gap.",
+    "Node.js engine compatibility (18+ for node:test) is assumed; package.json declares no engines constraint."
+  ],
+  "manualChecks": [
+    {
+      "id": "SC-001-AC1",
+      "text": "At least 3 demos use it within 30 days of launch",
+      "required": false,
+      "recorded": null
+    }
+  ],
+  "releaseNotes": [
+    "T1 (FR-001, FR-003, NFR-001): Add bin/hello.js that greets a named user and reports usage errors",
+    "T2 (NFR-001): Add src/format.js with shout(text) and its tests (the --shout CLI behavior is delivered by T3)",
+    "T3 (FR-002, NFR-001): Wire --shout through bin/hello.js using shout()"
+  ],
+  "operating": [
+    "Merged revision: target branch `main` at audited commit `9c277d7ea3ccaa0c8d5f3bde6a724842e69a6a35`.",
+    "Verify locally with the approved checks:",
+    "  - test: `npm test`",
+    "Setup, migration, and rollback instructions specific to the product live in the product/design documents and the merged code; rollback is a reviewed revert PR, never an unrecorded reset."
+  ]
+}
