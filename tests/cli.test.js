@@ -22,3 +22,21 @@ test('FR-003: CLI reports missing name on stderr and exits 2', () => {
   assert.equal(result.stdout, '');
   assert.equal(result.stderr, 'Usage: node bin/hello.js <name>\n');
 });
+
+test('FR-002: CLI upper-cases the greeting in shout mode and exits successfully', () => {
+  const result = spawnSync(process.execPath, [entryPoint, '--shout', 'Ada'], { encoding: 'utf8' });
+
+  assert.ifError(result.error);
+  assert.equal(result.status, 0);
+  assert.equal(result.stdout, 'HELLO, ADA!\n');
+  assert.equal(result.stderr, '');
+});
+
+test('FR-003: shout mode still requires a name', () => {
+  const result = spawnSync(process.execPath, [entryPoint, '--shout'], { encoding: 'utf8' });
+
+  assert.ifError(result.error);
+  assert.equal(result.status, 2);
+  assert.equal(result.stdout, '');
+  assert.equal(result.stderr, 'Usage: node bin/hello.js <name>\n');
+});
