@@ -1,0 +1,333 @@
+{
+  "schemaVersion": 1,
+  "projectId": "hello-cli-v2",
+  "objective": "Add --repeat <n> and --json, composing with --shout, preserving existing behavior except the compatibility changes explicitly authorized by Q-003, and add tests.",
+  "requirements": [
+    {
+      "id": "FR-101",
+      "kind": "functional",
+      "text": "--repeat <n> emits the greeting n times, defaulting to one emission.",
+      "acceptance": [
+        {
+          "id": "FR-101-AC1",
+          "text": "--repeat 3 Ada exits 0 with stdout exactly Hello, Ada! followed by newline three times, and empty stderr."
+        },
+        {
+          "id": "FR-101-AC2",
+          "text": "--repeat 1 Ada exits 0 with stdout exactly 'Hello, Ada!\\n' and empty stderr."
+        },
+        {
+          "id": "FR-101-AC3",
+          "text": "--repeat=2 Ada exits 0 with stdout exactly 'Hello, Ada!\\nHello, Ada!\\n' and empty stderr."
+        }
+      ],
+      "priority": "P1",
+      "classification": "development",
+      "verification": "automated"
+    },
+    {
+      "id": "FR-102",
+      "kind": "functional",
+      "text": "Missing or invalid repeat values fail before greeting output with exit 2 and usage.",
+      "acceptance": [
+        {
+          "id": "FR-102-AC1",
+          "text": "--repeat 0 Ada exits 2 with empty stdout and exactly USAGE plus newline on stderr."
+        },
+        {
+          "id": "FR-102-AC2",
+          "text": "Separate repeat-value cases for -1, abc, 1.5, empty string, 1e3 and 9007199254740992 exit 2 with empty stdout and exactly USAGE plus newline on stderr."
+        },
+        {
+          "id": "FR-102-AC3",
+          "text": "--repeat Ada, Ada --repeat and --repeat --json Ada each exit 2 with empty stdout and exactly USAGE plus newline on stderr."
+        }
+      ],
+      "priority": "P1",
+      "classification": "development",
+      "verification": "automated"
+    },
+    {
+      "id": "FR-103",
+      "kind": "functional",
+      "text": "--json emits a compact object containing the greeting string instead of plain greeting text.",
+      "acceptance": [
+        {
+          "id": "FR-103-AC1",
+          "text": "--json Ada exits 0 with stdout exactly '{\"greeting\":\"Hello, Ada!\"}\\n' and empty stderr."
+        },
+        {
+          "id": "FR-103-AC2",
+          "text": "Names containing quotes, backslashes, newline and tab produce valid JSON whose greeting equals greet(name), with one physical line per emission; serializer unit tests additionally cover NUL."
+        }
+      ],
+      "priority": "P1",
+      "classification": "development",
+      "verification": "automated"
+    },
+    {
+      "id": "FR-104",
+      "kind": "functional",
+      "text": "Repeat and JSON compose with shout and each other; options are recognized before or after the name as authorized by Q-003.",
+      "acceptance": [
+        {
+          "id": "FR-104-AC1",
+          "text": "--shout --json Ada exits 0 with stdout exactly '{\"greeting\":\"HELLO, ADA!\"}\\n' and empty stderr."
+        },
+        {
+          "id": "FR-104-AC2",
+          "text": "--shout --repeat 2 Ada exits 0 with stdout exactly 'HELLO, ADA!\\nHELLO, ADA!\\n' and empty stderr."
+        },
+        {
+          "id": "FR-104-AC3",
+          "text": "--json --repeat 2 --shout Ada emits exactly two compact shouted greeting object lines; --json --repeat 2 Ada emits exactly two compact unshouted greeting object lines. Both exit 0 with empty stderr."
+        },
+        {
+          "id": "FR-104-AC4",
+          "text": "Table-driven CLI cases place options before, after and around the name, including Ada --json --shout and Ada --repeat 2 --json --shout, and assert results equal their corresponding options-first invocations."
+        }
+      ],
+      "priority": "P1",
+      "classification": "development",
+      "verification": "automated"
+    },
+    {
+      "id": "FR-105",
+      "kind": "functional",
+      "text": "Preserve greeting, shout and no-name behavior, with only the compatibility changes authorized by Q-003.",
+      "acceptance": [
+        {
+          "id": "FR-105-AC1",
+          "text": "Ada exits 0 with stdout exactly 'Hello, Ada!\\n' and empty stderr."
+        },
+        {
+          "id": "FR-105-AC2",
+          "text": "--shout Ada exits 0 with stdout exactly 'HELLO, ADA!\\n' and empty stderr."
+        },
+        {
+          "id": "FR-105-AC3",
+          "text": "No arguments, --shout alone, --json alone, --repeat 2 without a name, and an empty first name exit 2 with empty stdout and exactly USAGE plus newline on stderr."
+        },
+        {
+          "id": "FR-105-AC4",
+          "text": "Existing greet and shout cases remain passing; greet(name) and shout(text) implementations remain unchanged."
+        },
+        {
+          "id": "FR-105-AC5",
+          "text": "Ada extra still greets Ada once; Ada --shout now shouts as authorized; usage is exactly 'Usage: node bin/hello.js [--shout] [--json] [--repeat <n>] <name>'."
+        }
+      ],
+      "priority": "P1",
+      "classification": "development",
+      "verification": "automated"
+    },
+    {
+      "id": "FR-106",
+      "kind": "functional",
+      "text": "Reject unknown options with exit 2 and usage, as authorized by Q-003.",
+      "acceptance": [
+        {
+          "id": "FR-106-AC1",
+          "text": "--verbose Ada, Ada --verbose and malformed boolean assignments such as --json=true Ada each exit 2 with empty stdout and exactly USAGE plus newline on stderr."
+        }
+      ],
+      "priority": "P2",
+      "classification": "development",
+      "verification": "automated"
+    },
+    {
+      "id": "NFR-101",
+      "kind": "nonfunctional",
+      "text": "Cover development criteria with dependency-free automated tests; npm test is the sole proposed future executable check.",
+      "acceptance": [
+        {
+          "id": "NFR-101-AC1",
+          "text": "After approved integration at M2, observed npm test on main passes with zero failures and each development criterion has mapped test evidence; CLI behavior uses spawnSync."
+        },
+        {
+          "id": "NFR-101-AC2",
+          "text": "Read-only comparison confirms package.json and excluded paths unchanged, with no new dependencies."
+        }
+      ],
+      "priority": "P1",
+      "classification": "development",
+      "verification": "automated"
+    },
+    {
+      "id": "SC-101",
+      "kind": "nonfunctional",
+      "text": "Optional inherited post-launch observation of demo consumption of JSON output, not an approved delivery commitment.",
+      "acceptance": [
+        {
+          "id": "SC-101-AC1",
+          "text": "If an owner elects to observe adoption, record whether a demo consumes JSON output within 30 days of release; do not gate development completion on this."
+        }
+      ],
+      "priority": "P3",
+      "classification": "post_launch",
+      "verification": "manual_optional"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "D-101",
+      "title": "Parser contract and approved compatibility",
+      "decision": "T1 owns parseCliArgs(argv) and USAGE in src/args.js. Apply the supplied Q-003 answer: reject unknown options and recognize options before or after the name. Use strict dependency-free parsing with positional support and per-occurrence validation. Repeat defaults to 1; require decimal digits and a positive safe integer; accept leading zeros and equals syntax; validate every occurrence and use the last valid count. Duplicate booleans are idempotent. Respect --. Use the first positional name and ignore extras; missing/empty first names fail. Return the documented structured success/failure contract."
+    },
+    {
+      "id": "D-102",
+      "title": "JSON formatting",
+      "decision": "T2 adds toJson(text) = JSON.stringify({greeting:text}); preserve shout(text). Shout before serializing. Default to compact JSON and one object per repetition."
+    },
+    {
+      "id": "D-103",
+      "title": "CLI process effects",
+      "decision": "T3 validates before stdout output. Failure prints USAGE once to stderr and sets exitCode 2. Success computes greeting, optional shout, optional JSON, then emits using a repeat loop without a repeated-output array or full repeated string."
+    },
+    {
+      "id": "D-104",
+      "title": "Authorized usage update",
+      "decision": "Q-003 authorizes USAGE = 'Usage: node bin/hello.js [--shout] [--json] [--repeat <n>] <name>'. Update existing exact usage assertions accordingly."
+    },
+    {
+      "id": "D-105",
+      "title": "Verification boundary",
+      "decision": "Retain node:test, strict assertions and spawnSync CLI tests. Add parser and serializer unit tests and mapped CLI cases. npm test is the sole proposed future executable check. Inspect changed test commands before execution. No checks are authorized or executed in this planning attempt; no browser work or direct CLI spot probes."
+    },
+    {
+      "id": "D-106",
+      "title": "Existing infrastructure and scope",
+      "decision": "Retain ESM, dependency-free manifest and Node 24 CI. No infrastructure work. Exclude README.md, package.json, src/greet.js, tests/greet.test.js, .github/** and .orchestrator/** from implementation writes. Supplied baseline is c858777df3c0146bb45c9f783b054a98bd547489; host runtime and baseline test success remain unverified."
+    }
+  ],
+  "milestones": [
+    {
+      "id": "M1",
+      "title": "After independent plan review, parser and formatter interfaces delivered with unit coverage; bin/hello.js unchanged; approved npm test passes on integrated target."
+    },
+    {
+      "id": "M2",
+      "title": "CLI integration complete on approved main target; all development criteria have passing mapped evidence from npm test; excluded paths unchanged."
+    }
+  ],
+  "tasks": [
+    {
+      "id": "T1",
+      "track": "args",
+      "milestone": "M1",
+      "purpose": "Implement parser and exact USAGE under the resolved Q-003 contract. Unit-test defaults, missing/empty name, every invalid/missing repeat value, leading zeros, safe-integer boundaries, equals syntax, repeated counts including invalid overwritten values, option positions, unknown options, malformed boolean assignments, duplicate booleans, -- terminator and ignored extra positionals. This enabling module is independently verifiable before CLI wiring.",
+      "requirementRefs": [
+        "FR-101",
+        "FR-102",
+        "FR-104",
+        "FR-105",
+        "FR-106",
+        "NFR-101"
+      ],
+      "dependsOn": [],
+      "writeGlobs": [
+        "src/args.js",
+        "tests/args.test.js"
+      ],
+      "checkIds": [
+        "test"
+      ],
+      "decisionRefs": [
+        "D-101",
+        "D-104",
+        "D-105",
+        "D-106"
+      ],
+      "sharedResources": [
+        "args-contract"
+      ],
+      "interfaceChanges": [
+        "parseCliArgs(argv: string[]): {ok:true, options:{name:string, shout:boolean, json:boolean, repeat:number}} | {ok:false, reason:'unknown-option'|'missing-name'|'invalid-repeat'}",
+        "USAGE: string"
+      ]
+    },
+    {
+      "id": "T2",
+      "track": "format",
+      "milestone": "M1",
+      "purpose": "Add toJson(text) and unit cases for compact serialization, shout-before-serialization and escaping/round trips for quotes, backslashes, newline, tab and NUL. Retain existing shout implementation and tests. This enabling formatter is independently verifiable before CLI wiring.",
+      "requirementRefs": [
+        "FR-103",
+        "FR-104",
+        "FR-105",
+        "NFR-101"
+      ],
+      "dependsOn": [],
+      "writeGlobs": [
+        "src/format.js",
+        "tests/format.test.js"
+      ],
+      "checkIds": [
+        "test"
+      ],
+      "decisionRefs": [
+        "D-102",
+        "D-105",
+        "D-106"
+      ],
+      "sharedResources": [
+        "format-contract"
+      ],
+      "interfaceChanges": [
+        "toJson(text: string): string; existing shout(text: string): string unchanged"
+      ]
+    },
+    {
+      "id": "T3",
+      "track": "cli",
+      "milestone": "M2",
+      "purpose": "Wire parser, usage, greeting, optional shout, JSON and repeat loop into bin/hello.js. Add spawnSync cases for every CLI acceptance criterion, including JSON plus repeat without shout, option positions, unknown options, empty name, extra positionals and escaping. Preserve existing regression coverage with the authorized usage change. Allow only interface-preserving integration repairs in parser/formatter source modules. Verify through the approved npm test check and read-only scope comparison; route broader changes through a structured request.",
+      "requirementRefs": [
+        "FR-101",
+        "FR-102",
+        "FR-103",
+        "FR-104",
+        "FR-105",
+        "FR-106",
+        "NFR-101"
+      ],
+      "dependsOn": [
+        "T1",
+        "T2"
+      ],
+      "writeGlobs": [
+        "bin/hello.js",
+        "tests/cli.test.js",
+        "src/args.js",
+        "src/format.js"
+      ],
+      "checkIds": [
+        "test"
+      ],
+      "decisionRefs": [
+        "D-101",
+        "D-102",
+        "D-103",
+        "D-104",
+        "D-105",
+        "D-106"
+      ],
+      "sharedResources": [
+        "args-contract",
+        "format-contract"
+      ]
+    }
+  ],
+  "assumptions": [
+    "Observed: source and existing CLI tests implement the legacy greeting/shout/usage behavior described in designMarkdown.",
+    "Observed: package.json uses ESM, declares no dependencies and defines npm test as node --test --test-reporter=spec; inspected existing tests do not launch a browser.",
+    "Observed: the workflow selects Node 24; local availability and passing baseline checks were not established.",
+    "Supplied decision Q-003 explicitly authorizes unknown-option rejection, options before or after the name and usage listing every option.",
+    "Default Q-001: compact JSON.stringify output.",
+    "Default Q-002: one JSON object per repetition, producing newline-delimited JSON when repeated.",
+    "Default: accept positive safe integer decimal counts with leading zeros; validate every repeat occurrence and use the last valid value.",
+    "Inference from source plus preservation requirement: extra positional arguments remain ignored.",
+    "No material product question remains; formal schema availability is an evidence limitation for runner validation."
+  ],
+  "questions": []
+}
