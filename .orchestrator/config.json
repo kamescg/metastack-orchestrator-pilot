@@ -2,8 +2,12 @@
   "schemaVersion": 1,
   "projectId": "hello-cli",
   "providers": {
-    "codex": { "kind": "codex" },
-    "claude": { "kind": "claude" }
+    "codex": {
+      "kind": "codex"
+    },
+    "claude": {
+      "kind": "claude"
+    }
   },
   "roles": {
     "builder": "codex",
@@ -16,7 +20,9 @@
   "checks": {
     "test": {
       "executable": "npm",
-      "args": ["test"],
+      "args": [
+        "test"
+      ],
       "requiresBrowser": false,
       "requiresNetwork": false,
       "parser": "node-spec",
@@ -24,19 +30,36 @@
       "timeoutSec": 300
     }
   },
-  "github": { "backend": "gh", "repository": "OWNER/hello-cli", "remote": "origin" },
+  "github": {
+    "backend": "gh",
+    "repository": "kamescg/metastack-orchestrator-pilot",
+    "remote": "origin"
+  },
   "policy": {
     "targetBranch": "main",
     "mergeMethod": "merge",
-    "requiredChecks": ["test"],
-    "integrationChecks": ["test"],
+    "requiredChecks": [
+      "test"
+    ],
+    "integrationChecks": [
+      "test"
+    ],
     "browserAuthorized": false,
     "allowedDependencyChanges": true,
-    "reservedActions": ["production-deploy", "live-data-mutation", "destructive-outside-workspace", "force-push", "history-rewrite", "branch-protection-change", "budget-increase", "acceptance-criteria-change"],
+    "reservedActions": [
+      "production-deploy",
+      "live-data-mutation",
+      "destructive-outside-workspace",
+      "force-push",
+      "history-rewrite",
+      "branch-protection-change",
+      "budget-increase",
+      "acceptance-criteria-change"
+    ],
     "budgets": {
       "planningInvocations": 6,
       "planningMinutes": 30,
-      "invocations": 50,
+      "invocations": 30,
       "activeHours": 8,
       "attemptMinutes": 30,
       "checkMinutes": 15,
@@ -47,10 +70,37 @@
       "remoteRetries": 3,
       "monetaryCapUsd": null
     },
-    "capacity": { "agents": 3, "builders": 2 },
+    "capacity": {
+      "agents": 3,
+      "builders": 2
+    },
     "waivers": [],
-    "elevatedPaths": [".github/**", "**/auth/**", "**/*auth*", "**/security/**", "**/migrations/**", "**/*.sql", "AGENTS.md", "CLAUDE.md", ".claude/**", ".codex/**", "**/*secret*", "**/*.pem"],
-    "prohibitedPaths": [".orchestrator/local/**", ".orchestrator/config.json", ".git/**", ".git"],
+    "elevatedPaths": [
+      ".github/**",
+      "**/auth/**",
+      "**/*auth*",
+      "**/security/**",
+      "**/migrations/**",
+      "**/*.sql",
+      "AGENTS.md",
+      "CLAUDE.md",
+      ".claude/**",
+      ".codex/**",
+      "**/*secret*",
+      "**/*.pem"
+    ],
+    "prohibitedPaths": [
+      ".orchestrator/local/**",
+      ".orchestrator/config.json",
+      ".git/**",
+      ".git"
+    ],
     "manualVerifications": {}
+  },
+  "runner": {
+    "author": {
+      "name": "Metastack Orchestrator",
+      "email": "3408362+kamescg@users.noreply.github.com"
+    }
   }
 }
