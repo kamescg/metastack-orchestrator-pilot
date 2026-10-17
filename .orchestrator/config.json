@@ -11,12 +11,12 @@
     }
   },
   "roles": {
-    "builder": "codex",
-    "reviewer": "codex",
-    "auditor": "codex",
+    "builder": "claude",
+    "reviewer": "claude",
+    "auditor": "claude",
     "planner": "codex",
     "plan_reviewer": "codex",
-    "replanner": "codex"
+    "replanner": "claude"
   },
   "checks": {
     "test": {
